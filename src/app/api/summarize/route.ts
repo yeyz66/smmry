@@ -7,6 +7,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { createClient } from '@supabase/supabase-js';
 // Correct path relative to @/ alias (smmry-app/src/)
 import { summarizationLimits } from '@/../config/limits'; 
+import { User as NextAuthUser } from 'next-auth'; // Import User type
 
 // Validation schema for the request body
 const summarizeRequestSchema = z.object({
@@ -65,7 +66,9 @@ export async function POST(request: NextRequest) {
       { status: 401 },
     );
   }
-  const userId = (session.user as any).id; // Extract user ID
+  // Explicitly type session.user and safely access id
+  const user = session.user as NextAuthUser & { id: string }; // Assuming id is string
+  const userId = user.id;
 
   try {
     // 3. Fetch Current Count & Check Limit
@@ -156,15 +159,24 @@ export async function POST(request: NextRequest) {
       }
     });
     
-  } catch (error: any) {
+  } catch (error: unknown) { // Change 'any' to 'unknown'
     // Log different types of errors
-    if (error.message.includes("Failed to fetch") || error.message.includes("Failed to summarize") || error.message.includes("Failed to update")) {
-       // Specific internal errors already logged
-       return NextResponse.json({ error: error.message }, { status: 500 });
+    // Check if error is an instance of Error before accessing message
+    let errorMessage = "Failed to process request";
+    if (error instanceof Error) {
+        errorMessage = error.message;
+        if (errorMessage.includes("Failed to fetch") || errorMessage.includes("Failed to summarize") || errorMessage.includes("Failed to update")) {
+           // Specific internal errors already logged
+           return NextResponse.json({ error: errorMessage }, { status: 500 });
+        } else {
+           // General processing error
+           console.error("Error processing summarization request:", error);
+           return NextResponse.json({ error: "Failed to process request" }, { status: 500 });
+        }
     } else {
-       // General processing error
-       console.error("Error processing summarization request:", error);
-       return NextResponse.json({ error: "Failed to process request" }, { status: 500 });
+        // Handle non-Error types if necessary
+        console.error("An unexpected error occurred:", error);
+        return NextResponse.json({ error: "An unexpected error occurred" }, { status: 500 });
     }
   }
 }

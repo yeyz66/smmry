@@ -1,5 +1,9 @@
 import Header from "@/components/layout/Header";
 import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 export default function GuidePage() {
   return (
@@ -81,7 +85,7 @@ function GuideStep({
         <h2 className="text-xl font-semibold mb-3">{title}</h2>
         <p className="text-gray-600 mb-6">{description}</p>
         <div className="rounded-lg overflow-hidden shadow-sm">
-          <img src={imageUrl} alt={title} className="w-full h-auto" />
+          <Image src={imageUrl} alt={title} className="w-full h-auto" />
         </div>
       </div>
     </div>

@@ -1,8 +1,13 @@
 'use client'; // Make this a client component
 
 import Link from 'next/link';
-import { FileText, LogIn, LogOut, User } from 'lucide-react';
+import { FileText, LogIn, LogOut } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
+import { Button } from "@/components/ui/button";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth/next";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Header() {
   const { data: session, status } = useSession();
