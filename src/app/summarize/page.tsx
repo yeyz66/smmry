@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRef } from "react";
 import { jsPDF } from "jspdf";
-import { useSearchParams } from 'next/navigation';
+// import { useSearchParams } from 'next/navigation'; // Removed unused import
 import Header from "@/components/layout/Header";
 import { 
   Clipboard, 
@@ -204,7 +204,7 @@ export default function SummarizePage() {
   
   return (
     <main>
-      <Header isAuthenticated={true} />
+      <Header />
       
       <div className="container mx-auto max-w-7xl px-4 py-8">
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">

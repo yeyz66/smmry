@@ -1,6 +1,6 @@
 import 'next-auth';
-import { DefaultSession, DefaultUser } from 'next-auth';
-import { JWT, DefaultJWT } from 'next-auth/jwt';
+import { DefaultSession } from 'next-auth';
+import { DefaultJWT } from 'next-auth/jwt';
 
 declare module 'next-auth' {
   /**
@@ -17,9 +17,12 @@ declare module 'next-auth' {
    * The shape of the user object returned in the OAuth providers' `profile` callback,
    * or the second parameter of the `session` callback, when using a database.
    */
+  // Disable the rule because this is standard practice for module augmentation
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface User extends DefaultUser {
     /** Add any custom properties needed from the User model */
     // Example: role?: string;
+    // Ensure DefaultUser properties are implicitly included or add needed ones explicitly
   }
 }
 

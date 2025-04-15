@@ -3,12 +3,6 @@
 import Link from 'next/link';
 import { FileText, LogIn, LogOut } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
-import { Button } from "@/components/ui/button";
-import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { getServerSession } from "next-auth/next";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Image from 'next/image';
 
 export default function Header() {
   const { data: session, status } = useSession();

@@ -1,8 +1,5 @@
 import Header from "@/components/layout/Header";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, ArrowRight } from "lucide-react";
 import Image from "next/image";
 
 export default function GuidePage() {

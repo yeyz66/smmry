@@ -4,7 +4,7 @@ import { Search, Eye, Download, Trash2 } from "lucide-react";
 export default function HistoryPage() {
   return (
     <main>
-      <Header isAuthenticated={true} />
+      <Header />
       
       <div className="container mx-auto max-w-7xl px-4 py-8">
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">

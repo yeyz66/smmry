@@ -1,36 +1,25 @@
-// import NextAuth, { NextAuthOptions } from 'next-auth'; // Remove NextAuthOptions
-import NextAuth from 'next-auth';
-// import GoogleProvider from 'next-auth/providers/google'; // Remove GoogleProvider
-// import { PrismaAdapter } from '@next-auth/prisma-adapter'; // Removed unused import
-// import { prisma } from '@/lib/prisma'; // Assuming prisma client is here // Removed unused import
+import { NextAuthOptions } from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
 
-// Import authOptions from the new location
-import { authOptions } from '@/lib/authOptions';
-
-// Remove environment variable checks (moved to lib/authOptions.ts)
-/*
+// Environment variable checks
 if (!process.env.GOOGLE_CLIENT_ID) {
   throw new Error('Missing GOOGLE_CLIENT_ID environment variable');
 }
-
 if (!process.env.GOOGLE_CLIENT_SECRET) {
   throw new Error('Missing GOOGLE_CLIENT_SECRET environment variable');
 }
-
 if (!process.env.NEXTAUTH_SECRET) {
   throw new Error('Missing NEXTAUTH_SECRET environment variable');
 }
-*/
 
-// Remove authOptions definition (moved to lib/authOptions.ts)
-/*
+// Define and export the auth options
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       httpOptions: {
-        timeout: 3000, // 增加超时时间到 3 秒 (3000ms)
+        timeout: 3000, // Increase timeout to 3 seconds (3000ms)
       },
     }),
     // Add other providers here if needed
@@ -57,10 +46,4 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   }
-};
-*/
-
-// Pass the options object to NextAuth
-const handler = NextAuth(authOptions);
-
-export { handler as GET, handler as POST }; 
+}; 

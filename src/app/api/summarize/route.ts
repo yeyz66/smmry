@@ -3,11 +3,12 @@ import { z } from 'zod';
 import OpenAI from "openai";
 import { getServerSession } from "next-auth/next";
 // Import the named export authOptions
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'; 
+// import { authOptions } from '@/app/api/auth/[...nextauth]/route'; // Old path
+import { authOptions } from '@/lib/authOptions'; // New path
 import { createClient } from '@supabase/supabase-js';
 // Correct path relative to @/ alias (smmry-app/src/)
 import { summarizationLimits } from '@/../config/limits'; 
-import { User as NextAuthUser } from 'next-auth'; // Import User type
+// import { User as NextAuthUser } from 'next-auth'; // Removed unused import
 
 // Validation schema for the request body
 const summarizeRequestSchema = z.object({
