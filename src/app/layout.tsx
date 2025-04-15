@@ -6,8 +6,8 @@ import Providers from "./providers";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "SummryAI - AI Text Summarization Tool",
-  description: "Transform long text into concise summaries in seconds with AI",
+  title: "Smmry: AI Article Summarizer - Summarize Articles Quickly",
+  description: "Use Smmry, the advanced AI article summarizer, to summarize articles and text instantly. Get a concise summarize of article content in seconds.",
 };
 
 export default function RootLayout({

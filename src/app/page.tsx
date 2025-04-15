@@ -135,7 +135,7 @@ export default function Home() {
           <div className="flex justify-between items-center p-4 border-b border-gray-200">
             <div className="flex items-center text-xl font-bold text-blue-500">
               <FileText className="mr-2" />
-              <span>SummryAI</span>
+              <span>Smmry: AI Article Summarizer</span>
             </div>
           </div>
           
@@ -144,7 +144,7 @@ export default function Home() {
             <div className="border-r border-gray-200">
               <div className="p-5">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-semibold">Text to Summarize</h2>
+                  <h2 className="text-lg font-semibold">Text to Summarize Article</h2>
                   <div className="flex gap-2">
                     <button 
                       className="p-2 bg-gray-100 rounded-md text-gray-600 hover:bg-gray-200 transition-colors" 
@@ -166,7 +166,7 @@ export default function Home() {
                 
                 <textarea 
                   className="w-full h-[400px] p-4 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Paste or type the text you want to summarize..."
+                  placeholder="Paste or type the article or text you want Smmry to summarize..."
                   value={text}
                   onChange={handleTextChange}
                 />
@@ -182,7 +182,7 @@ export default function Home() {
                       onClick={() => setShowOptions(!showOptions)}
                     >
                       <Settings className="w-4 h-4" />
-                      <span className="text-sm">Summarization Options</span>
+                      <span className="text-sm">Article Summarizer Options</span>
                     </button>
                     
                     <button 
@@ -190,7 +190,7 @@ export default function Home() {
                       onClick={handleSummarize}
                       disabled={isLoading || text.trim().length < 10}
                     >
-                      <span>{isLoading ? 'Summarizing...' : 'Summarize'}</span>
+                      <span>{isLoading ? 'Summarizing Article...' : 'Summarize Article'}</span>
                       <Wand2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -199,7 +199,7 @@ export default function Home() {
                 {/* Options panel */}
                 {showOptions && (
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                    <h3 className="font-medium mb-3">Customize your summary</h3>
+                    <h3 className="font-medium mb-3">Customize Your Article Summary</h3>
                     
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
@@ -262,7 +262,7 @@ export default function Home() {
             {/* Output Panel */}
             <div className="p-5">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">Summary Result</h2>
+                <h2 className="text-lg font-semibold">Article Summary Result</h2>
                 <div className="flex gap-2">
                   <button 
                     className={`p-2 bg-gray-100 rounded-md text-gray-600 hover:bg-gray-200 transition-colors ${!result?.summary ? 'opacity-50 cursor-not-allowed' : ''}`} 
@@ -303,7 +303,7 @@ export default function Home() {
                 ) : result?.summary ? (
                   <>
                     <div className="flex justify-between items-center mb-4">
-                      <h3 className="font-semibold">Summary</h3>
+                      <h3 className="font-semibold">Your Article Summary</h3>
                       <div className="flex gap-4 text-sm text-gray-500">
                         <div className="flex items-center gap-1">
                           <span>Original: {result.metadata.originalWordCount} words</span>
@@ -341,9 +341,9 @@ export default function Home() {
                     <div className="text-gray-400 mb-4">
                       <FileText className="w-16 h-16 mx-auto" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-600 mb-2">Your summary will appear here</h3>
+                    <h3 className="text-lg font-medium text-gray-600 mb-2">Your article summary will appear here</h3>
                     <p className="text-gray-500 max-w-md">
-                      Paste or type some text in the left panel and click "Summarize" to create a concise summary of your content.
+                      Paste or type your text in the left panel and click "Summarize Article" to get a concise summary of the article content with Smmry.
                     </p>
                   </div>
                 )}
@@ -395,7 +395,7 @@ export default function Home() {
       {/* User Operation Guide */}
       <div className="bg-gray-50 py-12">
         <div className="container mx-auto max-w-5xl px-4">
-          <h2 className="text-2xl font-bold text-center mb-8">How to Use SummryAI</h2>
+          <h2 className="text-2xl font-bold text-center mb-8">How to Use Smmry: Your AI Article Summarizer</h2>
           
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-white p-6 rounded-xl shadow-sm">
@@ -404,7 +404,7 @@ export default function Home() {
               </div>
               <h3 className="text-lg font-semibold mb-2">Input Text</h3>
               <p className="text-gray-600">
-                Paste your text content, upload a file, or manually enter the text you want to summarize. Supports various formats including .txt, .md, .doc, and .docx.
+                Paste your article text, upload a file, or enter the text Smmry should summarize. Supports various formats for your article summarizer needs.
               </p>
             </div>
             
@@ -414,7 +414,7 @@ export default function Home() {
               </div>
               <h3 className="text-lg font-semibold mb-2">Customize Options</h3>
               <p className="text-gray-600">
-                Choose the length, style, and complexity of your summary. Completely personalize your summary by clicking the "Summary Options" button to adjust to your specific needs.
+                Choose the length, style, and complexity for your summarize of article needs. Click "Article Summarizer Options" button to adjust to your specific needs.
               </p>
             </div>
             
@@ -424,13 +424,13 @@ export default function Home() {
               </div>
               <h3 className="text-lg font-semibold mb-2">Generate and Use</h3>
               <p className="text-gray-600">
-                Click the "Summarize" button to start processing. After generation, you can copy the text, download as PDF format, or share the link with others. Not satisfied? Click "Regenerate" to get a new summary version.
+                Click the "Summarize Article" button to start processing. After Smmry generates the summary of the article, you can copy the text, download as PDF format, or share the link with others. Not satisfied? Click "Regenerate" to get a new summarize of article version.
               </p>
             </div>
           </div>
           
           <div className="mt-10 text-center">
-            <h3 className="text-lg font-semibold mb-4">Advanced Features</h3>
+            <h3 className="text-lg font-semibold mb-4">Advanced Article Summarizer Features</h3>
             <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
               <div className="bg-white p-5 rounded-lg shadow-sm">
                 <h4 className="font-medium mb-2">Batch Processing</h4>
@@ -441,7 +441,7 @@ export default function Home() {
               <div className="bg-white p-5 rounded-lg shadow-sm">
                 <h4 className="font-medium mb-2">Multi-Language Support</h4>
                 <p className="text-gray-600 text-sm">
-                  SummryAI supports multiple languages and can automatically identify and process text content in different languages.
+                  Smmry, the article summarizer, supports multiple languages and can automatically identify and process text content in different languages.
                 </p>
               </div>
               <div className="bg-white p-5 rounded-lg shadow-sm">
@@ -453,7 +453,7 @@ export default function Home() {
               <div className="bg-white p-5 rounded-lg shadow-sm">
                 <h4 className="font-medium mb-2">Custom Theme</h4>
                 <p className="text-gray-600 text-sm">
-                  Advanced users can customize summary themes to focus on specific keywords and concepts in a particular field.
+                  Advanced users can customize article summary themes to focus on specific keywords and concepts in a particular field.
                 </p>
               </div>
             </div>

@@ -71,30 +71,50 @@ export async function POST(request: NextRequest) {
   const userId = user.id;
 
   try {
-    // 3. Fetch Current Count & Check Limit
+    // 3. Fetch Current Count & Modify Time, Check Limit based on Date
     let currentCount = 0;
-    let userRecordExists = false;
+    let isNewDay = true; // Assume new day or new user initially
 
-    const { data: countData, error: countError } = await supabase
+    // Get the start of today in UTC for consistent comparison
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+
+    const { data: userData, error: fetchError } = await supabase
       .from('user_summarization_counts')
-      .select('count')
+      .select('count, modify_time') // Select both count and modify_time
       .eq('user_id', userId)
-      .single(); // Use single() as user_id is primary key
+      .single();
 
-    if (countError && countError.code !== 'PGRST116') { // PGRST116: Row not found, which is fine
-      console.error("Error fetching user count:", countError);
-      throw new Error("Failed to fetch user summarization count.");
+    if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116: Row not found
+      console.error("Error fetching user data:", fetchError);
+      throw new Error("Failed to fetch user summarization data.");
     }
 
-    if (countData) {
-      currentCount = countData.count;
-      userRecordExists = true;
+    if (userData) {
+      currentCount = userData.count;
+      // Compare modify_time date with today's date
+      const lastModifiedDate = new Date(userData.modify_time);
+      lastModifiedDate.setUTCHours(0, 0, 0, 0); // Normalize to start of the day UTC
+
+      if (lastModifiedDate.getTime() === todayStart.getTime()) {
+        // It's the same day
+        isNewDay = false;
+      }
+      // If lastModifiedDate < todayStart, isNewDay remains true (reset)
+    }
+    // If userData is null (PGRST116), isNewDay remains true (new user)
+
+    // Check limit ONLY if it's the same day and count is already at/above limit
+    if (!isNewDay && currentCount >= summarizationLimits.google) {
+      return NextResponse.json(
+        { error: "Daily summarization limit reached. Please try again tomorrow." }, 
+        { status: 429 } // Too Many Requests
+      );
     }
     
-    // Check against the Google limit since login is required
-    if (currentCount >= summarizationLimits.google) {
-      return NextResponse.json({ error: "Summarization limit reached" }, { status: 429 });
-    }
+    // Determine the count to be set after successful summarization
+    // If it's a new day, count resets to 1, otherwise increments
+    const nextCount = isNewDay ? 1 : currentCount + 1;
 
     // Parse and validate the request body (moved after auth/limit check)
     const body = await request.json();
@@ -119,29 +139,25 @@ export async function POST(request: NextRequest) {
     }
     const targetWordCount = Math.max(Math.floor(wordCount * percentToKeep), 10);
     
-    // 4. Call DeepSeek API (Proceed if limit not reached)
+    // 4. Call DeepSeek API (Proceed if limit not reached or if it's a new day)
     const summary = await summarizeWithDeepSeek(text, targetWordCount, style, complexity);
     
-    // 5. Increment Count in Supabase
-    let updateError = null;
-    if (userRecordExists) {
-        const { error } = await supabase
-            .from('user_summarization_counts')
-            .update({ count: currentCount + 1 })
-            .eq('user_id', userId);
-        updateError = error;
-    } else {
-        // First summary for this user
-        const { error } = await supabase
-            .from('user_summarization_counts')
-            .insert({ user_id: userId, count: 1 });
-         updateError = error;
-    }
+    // 5. Upsert Count and Modify Time in Supabase
+    // Upsert handles both insert (if user_id doesn't exist) and update
+    const { error: upsertError } = await supabase
+      .from('user_summarization_counts')
+      .upsert({ 
+        user_id: userId, 
+        count: nextCount, // Use the calculated next count
+        modify_time: new Date().toISOString() // Update timestamp
+      }, {
+        onConflict: 'user_id' // Specify the conflict target (usually the primary key)
+      });
 
-    if (updateError) {
-        console.error("Error updating user count:", updateError);
+    if (upsertError) {
+        console.error("Error upserting user count:", upsertError);
         // Decide if you should still return the summary or an error
-        // Returning 500 for now as the state is inconsistent
+        // Returning 500 as the state might be inconsistent
         return NextResponse.json({ error: "Failed to update usage count" }, { status: 500 });
     }
 
