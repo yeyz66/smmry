@@ -17,9 +17,6 @@ const summarizeRequestSchema = z.object({
   complexity: z.number().min(1).max(5).default(3),
 });
 
-// Type inference from the schema
-type SummarizeRequest = z.infer<typeof summarizeRequestSchema>;
-
 // Configure DeepSeek API client
 const openai = new OpenAI({
   baseURL: 'https://api.deepseek.com',
@@ -66,9 +63,16 @@ export async function POST(request: NextRequest) {
       { status: 401 },
     );
   }
-  // Explicitly type session.user and safely access id
-  const user = session.user as NextAuthUser & { id: string }; // Assuming id is string
-  const userId = user.id;
+  // Use the augmented session type, removing the explicit (and incorrect) assertion
+  // The user id should be available via session.user.id directly if types are resolved
+  // const user = session.user as NextAuthUser & { id: string }; // Assuming id is string
+  const userId = session.user?.id; // Access id safely
+
+  // Add a check if userId is somehow still undefined after login check
+  if (!userId) {
+    console.error("User ID not found in session after login check.");
+    return NextResponse.json({ error: "User session error" }, { status: 500 });
+  }
 
   try {
     // 3. Fetch Current Count & Modify Time, Check Limit based on Date

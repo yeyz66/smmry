@@ -43,9 +43,8 @@ export const authOptions: NextAuthOptions = {
       // Send properties to the client, like the user ID.
       // Ensure session.user is defined before assigning properties
       if (session.user && token.id) {
-        // TODO: Augment the Session interface in a `.d.ts` file to include the `id` property
-        // For now, using type assertion.
-        (session.user as { id?: unknown }).id = token.id; // Use unknown in assertion
+        // The Session interface is augmented in src/types/next-auth.d.ts
+        session.user.id = token.id as string;
       }
       return session;
     },

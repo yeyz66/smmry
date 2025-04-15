@@ -1,21 +1,20 @@
 'use client';
 
-import { useState, useRef } from "react";
+import { useState } from 'react';
 import { jsPDF } from "jspdf";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { 
   Clipboard, 
-  Upload, 
   Trash2, 
   Settings, 
-  Wand2, 
   Copy, 
   Download, 
-  Share, 
   RefreshCcw, 
-  Save,
-  FileText
+  Save, 
+  FileText, 
+  Loader2, 
+  AlertTriangle 
 } from "lucide-react";
 import useSummarize, { SummaryLength, SummaryStyle } from "@/hooks/useSummarize";
 
@@ -127,341 +126,236 @@ export default function Home() {
   };
   
   return (
-    <main>
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <Header />
       
-      <div className="container mx-auto max-w-7xl px-4 py-8">
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="flex justify-between items-center p-4 border-b border-gray-200">
-            <div className="flex items-center text-xl font-bold text-blue-500">
-              <FileText className="mr-2" />
-              <span>Smmry: AI Article Summarizer</span>
-            </div>
-          </div>
-          
-          <div className="grid md:grid-cols-2 min-h-[600px]">
-            {/* Input Panel */}
-            <div className="border-r border-gray-200">
-              <div className="p-5">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-semibold">Text to Summarize Article</h2>
-                  <div className="flex gap-2">
-                    <button 
-                      className="p-2 bg-gray-100 rounded-md text-gray-600 hover:bg-gray-200 transition-colors" 
-                      title="Paste from clipboard"
-                      onClick={handlePaste}
-                    >
-                      <Clipboard className="w-5 h-5" />
-                    </button>
-                    <button 
-                      className={`p-2 bg-gray-100 rounded-md text-gray-600 hover:bg-gray-200 transition-colors ${!text ? 'opacity-50 cursor-not-allowed' : ''}`} 
-                      title="Clear text"
-                      onClick={handleClear}
-                      disabled={!text}
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-                
-                <textarea 
-                  className="w-full h-[400px] p-4 border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Paste or type the article or text you want Smmry to summarize..."
-                  value={text}
-                  onChange={handleTextChange}
-                />
-                
-                <div className="mt-2 flex justify-between items-center">
-                  <div className="text-sm text-gray-500">
-                    {charCount} characters
-                  </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <button 
-                      className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-                      onClick={() => setShowOptions(!showOptions)}
-                    >
-                      <Settings className="w-4 h-4" />
-                      <span className="text-sm">Article Summarizer Options</span>
-                    </button>
-                    
-                    <button 
-                      className={`btn btn-primary flex items-center gap-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
-                      onClick={handleSummarize}
-                      disabled={isLoading || text.trim().length < 10}
-                    >
-                      <span>{isLoading ? 'Summarizing Article...' : 'Summarize Article'}</span>
-                      <Wand2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-                
-                {/* Options panel */}
-                {showOptions && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                    <h3 className="font-medium mb-3">Customize Your Article Summary</h3>
-                    
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Length</label>
-                        <div className="grid grid-cols-2 gap-2">
-                          {(['very-short', 'short', 'medium', 'long'] as SummaryLength[]).map((length) => (
-                            <button
-                              key={length}
-                              className={`px-3 py-1 text-sm rounded-md ${
-                                options.length === length ? 'bg-blue-500 text-white' : 'bg-white border border-gray-200'
-                              }`}
-                              onClick={() => handleLengthChange(length)}
-                            >
-                              {length.replace('-', ' ')}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Style</label>
-                        <div className="flex flex-wrap gap-2">
-                          {(['concise', 'detailed', 'bullet-points', 'academic', 'simplified'] as SummaryStyle[]).map((style) => (
-                            <button
-                              key={style}
-                              className={`px-3 py-1 text-sm rounded-md ${
-                                options.style === style ? 'bg-blue-500 text-white' : 'bg-white border border-gray-200'
-                              }`}
-                              onClick={() => handleStyleChange(style)}
-                            >
-                              {style.replace('-', ' ')}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Complexity Level: {options.complexity}
-                      </label>
-                      <input 
-                        type="range" 
-                        min="1" 
-                        max="5" 
-                        value={options.complexity} 
-                        onChange={handleComplexityChange}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-xs text-gray-500">
-                        <span>Simpler</span>
-                        <span>More Complex</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {/* Output Panel */}
-            <div className="p-5">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">Article Summary Result</h2>
-                <div className="flex gap-2">
-                  <button 
-                    className={`p-2 bg-gray-100 rounded-md text-gray-600 hover:bg-gray-200 transition-colors ${!result?.summary ? 'opacity-50 cursor-not-allowed' : ''}`} 
-                    title="Copy"
-                    onClick={handleCopy}
-                    disabled={!result?.summary}
-                  >
-                    <Copy className="w-5 h-5" />
-                  </button>
-                  <button 
-                    className={`p-2 bg-gray-100 rounded-md text-gray-600 hover:bg-gray-200 transition-colors ${!result?.summary ? 'opacity-50 cursor-not-allowed' : ''}`} 
-                    title="Download as PDF"
-                    onClick={handleDownloadPDF}
-                    disabled={!result?.summary}
-                  >
-                    <Download className="w-5 h-5" />
-                  </button>
-                  <button 
-                    className={`p-2 bg-gray-100 rounded-md text-gray-600 hover:bg-gray-200 transition-colors ${!result?.summary ? 'opacity-50 cursor-not-allowed' : ''}`} 
-                    title="Share"
-                    onClick={handleShare}
-                    disabled={!result?.summary}
-                  >
-                    <Share className="w-5 h-5" />
-                  </button>
+      <main className="flex-1 container mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <section className="text-center py-16">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Effortless Text Summarization</h1>
+          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Quickly condense articles, reports, and documents into key points with our AI-powered tool.
+          </p>
+          <button 
+            onClick={() => document.getElementById('summarizer-section')?.scrollIntoView({ behavior: 'smooth' })}
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-md font-semibold hover:bg-primary/90 transition-colors"
+          >
+            Start Summarizing
+          </button>
+        </section>
+        
+        {/* Summarizer Section */}
+        <section id="summarizer-section" className="py-16 border-t">
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Input Area */}
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-semibold">Your Text</h2>
+                <div className="flex items-center gap-2">
+                  <button title="Settings" className="p-2 text-muted-foreground hover:text-foreground"><Settings size={18} /></button>
+                  <button title="Clear Text" onClick={handleClear} className="p-2 text-muted-foreground hover:text-foreground"><Trash2 size={18} /></button>
                 </div>
               </div>
-              
-              <div className="bg-gray-50 rounded-lg p-5 min-h-[400px]">
-                {error ? (
-                  <div className="text-red-500 p-4 bg-red-50 rounded-md">
-                    {error}
-                  </div>
-                ) : isLoading ? (
-                  <div className="flex items-center justify-center h-full">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                  </div>
-                ) : result?.summary ? (
+              <textarea
+                value={text}
+                onChange={handleTextChange}
+                placeholder="Paste your text here... (min 10 characters)"
+                rows={15}
+                className="w-full p-4 border rounded-md bg-card text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-y"
+              />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 border rounded-md bg-card">
+                <div>
+                  <label htmlFor="length" className="block text-sm font-medium text-muted-foreground mb-1">Length</label>
+                  <select 
+                    id="length" 
+                    value={options.length}
+                    onChange={(e) => handleLengthChange(e.target.value as SummaryLength)}
+                    className="w-full p-2 border rounded-md bg-input"
+                   >
+                    <option value="very-short">Very Short</option>
+                    <option value="short">Short</option>
+                    <option value="medium">Medium</option>
+                    <option value="long">Long</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="style" className="block text-sm font-medium text-muted-foreground mb-1">Style</label>
+                  <select 
+                    id="style" 
+                    value={options.style}
+                    onChange={(e) => handleStyleChange(e.target.value as SummaryStyle)}
+                    className="w-full p-2 border rounded-md bg-input"
+                  >
+                    <option value="concise">Concise</option>
+                    <option value="detailed">Detailed</option>
+                    <option value="bullet-points">Bullet Points</option>
+                    <option value="academic">Academic</option>
+                    <option value="simplified">Simplified</option>
+                  </select>
+                </div>
+                <div className="sm:col-span-1">
+                  <label htmlFor="complexity" className="block text-sm font-medium text-muted-foreground mb-1">Complexity: {options.complexity}</label>
+                  <input 
+                    type="range" 
+                    id="complexity"
+                    min="1" 
+                    max="5" 
+                    step="1" 
+                    value={options.complexity}
+                    onChange={(e) => handleComplexityChange(e)}
+                    className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+                   />
+                </div>
+              </div>
+              <button
+                onClick={handleSummarize}
+                disabled={isLoading || !text.trim() || text.length < 10}
+                className="w-full px-6 py-3 bg-primary text-primary-foreground rounded-md font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              >
+                {isLoading ? (
                   <>
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="font-semibold">Your Article Summary</h3>
-                      <div className="flex gap-4 text-sm text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <span>Original: {result.metadata.originalWordCount} words</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span>Summary: {result.metadata.summaryWordCount} words ({result.metadata.percentReduced}% reduction)</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="text-gray-700 leading-relaxed">
-                      {result.metadata.style === 'bullet-points' ? (
-                        <div dangerouslySetInnerHTML={{ __html: result.summary.replace(/\n/g, '<br />') }} />
-                      ) : (
-                        <p>{result.summary}</p>
-                      )}
-                    </div>
-                    
-                    <div className="flex justify-end gap-2 mt-6">
-                      <button 
-                        className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-md bg-white hover:bg-gray-50 transition-colors"
-                        onClick={() => summarize(text, options)}
-                      >
-                        <RefreshCcw className="w-4 h-4" />
-                        <span className="text-sm">Regenerate</span>
-                      </button>
-                      <button className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-md bg-white hover:bg-gray-50 transition-colors">
-                        <Save className="w-4 h-4" />
-                        <span className="text-sm">Save</span>
-                      </button>
-                    </div>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Summarizing...
                   </>
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-center p-5">
-                    <div className="text-gray-400 mb-4">
-                      <FileText className="w-16 h-16 mx-auto" />
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-600 mb-2">Your article summary will appear here</h3>
-                    <p className="text-gray-500 max-w-md">
-                      Paste or type your text in the left panel and click "Summarize Article" to get a concise summary of the article content with Smmry.
-                    </p>
+                  'Summarize Text'
+                )}
+              </button>
+            </div>
+            
+            {/* Output Area */}
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-semibold">Summary</h2>
+                {result?.summary && (
+                  <div className="flex items-center gap-2">
+                    <button title="Copy Summary" onClick={handleCopy} className="p-2 text-muted-foreground hover:text-foreground"><Copy size={18} /></button>
                   </div>
                 )}
               </div>
+              <div className="w-full p-4 border rounded-md bg-card text-card-foreground h-[300px] overflow-y-auto relative">
+                {isLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-card/50">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                )}
+                {error && (
+                  <div className="text-destructive flex items-center">
+                    <AlertTriangle className="mr-2 h-5 w-5" />
+                    Error: {error}
+                  </div>
+                )}
+                {!isLoading && !error && !result?.summary && (
+                  <p className="text-muted-foreground text-center pt-10">
+                    Your summary will appear here.
+                  </p>
+                )}
+                {!isLoading && !error && result?.summary && (
+                  <div className="whitespace-pre-wrap">{result.summary}</div>
+                )}
+              </div>
+              {result?.metadata && (
+                 <div className="text-sm text-muted-foreground p-4 border rounded-md bg-card space-y-1">
+                    <p>Original Words: {result.metadata.originalWordCount}</p>
+                    <p>Summary Words: {result.metadata.summaryWordCount} ({result.metadata.percentReduced}% reduction)</p>
+                    <p>Settings: {result.metadata.length}, {result.metadata.style}, Complexity {result.metadata.complexity}</p>
+                 </div>
+              )}
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+        
+        {/* Features Section - Placeholder */}
+        <section id="features" className="py-16">
+          <h2 className="text-3xl font-bold text-center mb-12">Features</h2>
+          <div className="grid md:grid-cols-3 gap-8 text-center">
+             <div>Icon 1 + Feature</div> 
+             <div>Icon 2 + Feature</div> 
+             <div>Icon 3 + Feature</div> 
+          </div>
+        </section>
+        
+        {/* Pricing Section */}
+        <section id="pricing" className="py-16 bg-secondary">
+          <h2 className="text-3xl font-bold text-center mb-12 text-secondary-foreground">Pricing</h2>
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Free Plan */}
+            <div className="border rounded-lg p-6 bg-card text-card-foreground">
+               <h3 className="text-lg font-semibold mb-2">Free Plan</h3>
+               <p className="text-muted-foreground mb-4">Up to 5 summaries per day.</p>
+               <ul className="list-disc list-inside space-y-2 mb-6 text-sm">
+                 <li>Summarize texts up to 1,000 words</li>
+                 <li>Standard processing speed</li>
+                 <li>Basic style & length options</li>
+                 <li>Access via Web App</li>
+               </ul>
+              <button disabled className="w-full px-4 py-2 bg-muted text-muted-foreground rounded-md">
+                Your Current Plan
+              </button>
+            </div>
+            {/* Pro Plan */}
+            <div className="border rounded-lg p-6 bg-card text-card-foreground">
+               <h3 className="text-lg font-semibold mb-2">Pro Plan (Coming Soon)</h3>
+               <p className="text-muted-foreground mb-4">
+                 <span className="text-2xl font-bold">$9.99</span> / month
+               </p>
+               <ul className="list-disc list-inside space-y-2 mb-6 text-sm">
+                 <li>Unlimited summaries</li>
+                 <li>Summarize texts up to 10,000 words</li>
+                 <li>Priority processing speed</li>
+                 <li>Advanced style & length options</li>
+                 <li>Access via Web App & API</li>
+                 <li>Early access to new features</li>
+               </ul>
+              <button disabled className="w-full px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80">
+                Coming Soon
+              </button>
+            </div>
+          </div>
+          <p className="text-center text-sm text-muted-foreground mt-8">
+            Need more? Contact us for enterprise solutions.
+          </p>
+        </section>
+        
+        {/* How It Works */}
+        <section id="how-it-works" className="py-16">
+           <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
+           <div className="grid md:grid-cols-3 gap-8">
+             <div className="text-center">
+               <div className="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary text-primary-foreground text-2xl font-bold">1</div>
+               <h3 className="text-xl font-semibold mb-2">Paste or Upload</h3>
+               <p className="text-muted-foreground">Input your text directly or upload a document.</p>
+             </div>
+             <div className="text-center">
+               <div className="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary text-primary-foreground text-2xl font-bold">2</div>
+               <h3 className="text-xl font-semibold mb-2">Customize</h3>
+               <p className="text-muted-foreground">Choose summary length, style, and complexity.</p>
+             </div>
+             <div className="text-center">
+               <div className="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary text-primary-foreground text-2xl font-bold">3</div>
+               <h3 className="text-xl font-semibold mb-2">Summarize</h3>
+               <p className="text-muted-foreground">Get your concise summary in seconds.</p>
+             </div>
+           </div>
+        </section>
+        
+        {/* FAQ */}
+        <section id="faq" className="py-16 bg-secondary">
+          <h2 className="text-3xl font-bold text-center mb-12 text-secondary-foreground">Frequently Asked Questions</h2>
+          <div className="max-w-3xl mx-auto space-y-6">
+            <div>
+              <h3 className="font-semibold text-secondary-foreground">What types of text can I summarize?</h3>
+              <p className="text-muted-foreground mt-1">You can summarize articles, reports, emails, research papers, and more. Currently, we support plain text input and plan to add document uploads (.txt, .pdf, .docx) soon.</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-secondary-foreground">Is there a limit on text length?</h3>
+              <p className="text-muted-foreground mt-1">Yes, there is a limit on text length. The current limit is 10,000 words. If you need to summarize longer texts, please contact us for enterprise solutions.</p>
+            </div>
+          </div>
+        </section>
+      </main>
       
-      {/* Share Modal */}
-      {showShareModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <h3 className="text-xl font-semibold mb-4">Share Summary</h3>
-            <p className="text-gray-600 mb-4">Use this link to share your summary with others:</p>
-            
-            <div className="flex overflow-hidden border border-gray-200 rounded-md mb-4">
-              <input
-                type="text"
-                value={shareUrl || ''}
-                readOnly
-                className="flex-grow p-2 text-sm focus:outline-none"
-              />
-              <button 
-                className="bg-gray-100 text-gray-600 px-3 flex items-center hover:bg-gray-200 transition-colors"
-                onClick={async () => {
-                  if (shareUrl) {
-                    await navigator.clipboard.writeText(shareUrl);
-                    alert('Link copied to clipboard!');
-                  }
-                }}
-              >
-                <Copy className="w-4 h-4" />
-              </button>
-            </div>
-            
-            <div className="flex justify-end">
-              <button 
-                className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
-                onClick={() => setShowShareModal(false)}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* User Operation Guide */}
-      <div className="bg-gray-50 py-12">
-        <div className="container mx-auto max-w-5xl px-4">
-          <h2 className="text-2xl font-bold text-center mb-8">How to Use Smmry: Your AI Article Summarizer</h2>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <span className="text-blue-600 font-bold text-xl">1</span>
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Input Text</h3>
-              <p className="text-gray-600">
-                Paste your article text, upload a file, or enter the text Smmry should summarize. Supports various formats for your article summarizer needs.
-              </p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <span className="text-blue-600 font-bold text-xl">2</span>
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Customize Options</h3>
-              <p className="text-gray-600">
-                Choose the length, style, and complexity for your summarize of article needs. Click "Article Summarizer Options" button to adjust to your specific needs.
-              </p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-xl shadow-sm">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <span className="text-blue-600 font-bold text-xl">3</span>
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Generate and Use</h3>
-              <p className="text-gray-600">
-                Click the "Summarize Article" button to start processing. After Smmry generates the summary of the article, you can copy the text, download as PDF format, or share the link with others. Not satisfied? Click "Regenerate" to get a new summarize of article version.
-              </p>
-            </div>
-          </div>
-          
-          <div className="mt-10 text-center">
-            <h3 className="text-lg font-semibold mb-4">Advanced Article Summarizer Features</h3>
-            <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-              <div className="bg-white p-5 rounded-lg shadow-sm">
-                <h4 className="font-medium mb-2">Batch Processing</h4>
-                <p className="text-gray-600 text-sm">
-                  Increase your productivity by batch processing multiple documents through our API integration.
-                </p>
-              </div>
-              <div className="bg-white p-5 rounded-lg shadow-sm">
-                <h4 className="font-medium mb-2">Multi-Language Support</h4>
-                <p className="text-gray-600 text-sm">
-                  Smmry, the article summarizer, supports multiple languages and can automatically identify and process text content in different languages.
-                </p>
-              </div>
-              <div className="bg-white p-5 rounded-lg shadow-sm">
-                <h4 className="font-medium mb-2">Save History</h4>
-                <p className="text-gray-600 text-sm">
-                  After registering an account, you can save your summary history for easy access and re-editing previous work.
-                </p>
-              </div>
-              <div className="bg-white p-5 rounded-lg shadow-sm">
-                <h4 className="font-medium mb-2">Custom Theme</h4>
-                <p className="text-gray-600 text-sm">
-                  Advanced users can customize article summary themes to focus on specific keywords and concepts in a particular field.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <Footer />
-    </main>
+    </div>
   );
 } 

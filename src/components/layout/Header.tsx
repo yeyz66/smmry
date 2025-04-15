@@ -8,6 +8,7 @@ import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from 'next/image';
 
 export default function Header() {
   const { data: session, status } = useSession();

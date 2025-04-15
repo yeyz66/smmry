@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from 'react';
+import { useRef } from "react";
 import { jsPDF } from "jspdf";
+import { useSearchParams } from 'next/navigation';
 import Header from "@/components/layout/Header";
 import { 
   Clipboard, 
