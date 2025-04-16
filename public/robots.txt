@@ -1,0 +1,13 @@
+# robots.txt for SMMRY
+
+User-agent: *
+Allow: /
+
+# Allow all crawlers to access all content
+Sitemap: https://aismmry.com/sitemap.xml
+
+# Ensure these directories are indexed
+Allow: /summarize
+Allow: /guide
+Allow: /history
+Allow: /settings 

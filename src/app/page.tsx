@@ -121,7 +121,7 @@ export default function Home() { // Changed component name to Home
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) { // 5MB
-      alert("文件过大，请上传小于5MB的文件");
+      alert("File too large, please upload a file smaller than 5MB");
       return;
     }
 
@@ -133,7 +133,7 @@ export default function Home() { // Changed component name to Home
     ];
 
     if (!allowedTypes.includes(file.type)) {
-      alert("不支持的文件类型，请上传txt、pdf或doc/docx文件");
+      alert("Unsupported file type, please upload a TXT, PDF, or DOC/DOCX file");
       return;
     }
 
@@ -149,13 +149,13 @@ export default function Home() { // Changed component name to Home
            alert(`Uploaded text exceeds the ${WORD_LIMIT}-word limit and has been truncated.`);
          }
       } else {
-        // 对于其他类型，在实际应用中应该上传到服务器进行处理
-        // 这里仅作为示例，假设提取了文本
-        alert("在真实应用中，我们会处理PDF和Word文件。当前仅支持TXT文件提取。");
+        // For other types, in a real application we would upload to server for processing
+        // This is just a demo assuming we extracted text
+        alert("In a real application, we would process PDF and Word files. Currently only TXT files are supported.");
       }
     } catch (err) {
-      console.error("文件读取错误:", err);
-      alert("文件读取失败，请重试或尝试其他文件");
+      console.error("File reading error:", err);
+      alert("Failed to read file, please try again or try another file");
     }
 
     // 清除文件输入，便于再次选择同一文件
@@ -241,10 +241,10 @@ export default function Home() { // Changed component name to Home
 
     try {
       await navigator.clipboard.writeText(shareUrl);
-      alert("链接已复制到剪贴板！");
+      alert("Link copied to clipboard!");
     } catch (err) {
       console.error("Failed to copy:", err);
-      alert("无法复制链接，请手动复制。");
+      alert("Unable to copy link, please copy manually.");
     }
   };
 
@@ -266,227 +266,221 @@ export default function Home() { // Changed component name to Home
   };
 
   return (
-    <main className="flex flex-col min-h-screen bg-gray-50"> {/* Added flex flex-col and min-h-screen */}
+    <main className="min-h-screen">
       <Header />
-
-      <div className="flex-1 container mx-auto max-w-7xl px-4 py-8"> {/* Added flex-1 */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          {/* Removed inner header, Header component is used */}
-          {/* <div className="flex justify-between items-center p-4 border-b border-gray-200"> ... </div> */}
-
-          <div className="grid md:grid-cols-2 min-h-[600px]">
-            {/* Input Panel */}
-            <div className="p-6 border-r border-gray-200 flex flex-col"> {/* Added flex flex-col */}
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Input Text</h2>
-                <div className="flex items-center gap-2">
-                  <button
-                    className="control-btn"
-                    title="Paste Text"
-                    onClick={handlePaste}
-                  >
-                    <Clipboard className="w-4 h-4" />
-                  </button>
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileUpload}
-                    accept=".txt,.pdf,.doc,.docx"
-                    style={{ display: 'none' }}
-                  />
-                  <button
-                    className="control-btn"
-                    title="Upload File"
-                    onClick={triggerFileUpload}
-                  >
-                    <Upload className="w-4 h-4" />
-                  </button>
-                  <button
-                    className="control-btn text-red-500 hover:text-red-700"
-                    title="Clear Text"
-                    onClick={handleClear}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              <textarea
-                value={text}
-                onChange={handleTextChange}
-                placeholder="Paste text, type, or upload a file..."
-                className={`w-full flex-1 p-4 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 ${isOverLimit ? 'border-red-500 focus:ring-red-500' : 'border-gray-200'}`} // Added flex-1 for textarea growth
-              />
-
-              <div className="flex justify-between items-center mt-4">
-                <div className={`text-sm ${isOverLimit ? 'text-red-600 font-semibold' : 'text-gray-500'}`}>
-                  {wordCount} / {WORD_LIMIT} words ({charCount} chars)
-                </div>
-                <div className="flex items-center gap-4 relative">
-                  {/* Options Dropdown Button */}
-                  <div className="relative inline-block text-left">
-                     <button
-                        onClick={toggleOptions}
-                        className="inline-flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                     >
-                       <Settings size={16} />
-                       Options
-                     </button>
-                     {showOptions && (
-                      <div className="origin-bottom-right absolute right-0 bottom-full mb-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10 p-4 space-y-4">
-                        {/* Length Option */}
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">Length</label>
-                          <select
-                            value={options.length}
-                            onChange={(e) => handleLengthChange(e.target.value as SummaryLength)}
-                            className="w-full p-1.5 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
-                          >
-                            <option value="very-short">Very Short</option>
-                            <option value="short">Short</option>
-                            <option value="medium">Medium</option>
-                            <option value="long">Long</option>
-                          </select>
-                        </div>
-                        {/* Style Option */}
-                        <div>
-                           <label className="block text-xs font-medium text-gray-500 mb-1">Style</label>
-                           <select
-                             value={options.style}
-                             onChange={(e) => handleStyleChange(e.target.value as SummaryStyle)}
-                             className="w-full p-1.5 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
-                           >
-                             <option value="concise">Concise</option>
-                             <option value="detailed">Detailed</option>
-                             <option value="bullet-points">Bullet Points</option>
-                             <option value="academic">Academic</option>
-                             <option value="simplified">Simplified</option>
-                           </select>
-                        </div>
-                        {/* Complexity Option */}
-                        <div>
-                          <label className="block text-xs font-medium text-gray-500 mb-1">Complexity: {options.complexity}</label>
-                          <input
-                            type="range"
-                            min="1" max="5" step="1"
-                            value={options.complexity}
-                            onChange={handleComplexityChange}
-                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                          />
-                        </div>
-                      </div>
-                     )}
-                   </div>
-                   {/* Summarize Button */}
-                   <button
-                     onClick={handleSummarize}
-                     disabled={isLoading || !text.trim() || isOverLimit}
-                     className="btn btn-primary px-5 py-2.5 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                   >
-                     {isLoading ? (
-                       <>
-                         <Loader2 className="h-4 w-4 animate-spin" />
-                         Summarizing...
-                       </>
-                     ) : (
-                       "Summarize"
-                     )}
-                   </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Output Panel */}
-            <div className="p-6 flex flex-col"> {/* Added flex flex-col */}
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Summary Result</h2>
-                {result?.summary && !isLoading && (
-                  <div className="flex items-center gap-2">
-                    <button
-                      className="control-btn"
-                      title="Copy Summary"
-                      onClick={handleCopy}
-                    >
-                      <Copy className="w-4 h-4" />
-                    </button>
-                    <button
-                      className="control-btn"
-                      title="Download as PDF"
-                       onClick={handleDownloadPDF}
-                    >
-                      <Download className="w-4 h-4" />
-                    </button>
-                    <button
-                      className="control-btn"
-                      title="Share Summary"
-                      onClick={handleShare}
-                    >
-                      <Share className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div className="w-full flex-1 p-4 border rounded-md bg-gray-50 min-h-[300px] overflow-y-auto relative flex flex-col"> {/* Added flex-1 */}
-                {isLoading && (
-                  <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10 rounded-md">
-                    <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-                  </div>
-                )}
-                {error && !isLoading && (
-                  <div className="absolute inset-0 bg-red-50 flex items-center justify-center z-10 rounded-md p-4">
-                     <div className="text-center text-red-700">
-                       <AlertTriangle className="w-10 h-10 mx-auto mb-2" />
-                       <p className="font-semibold">Error Generating Summary</p>
-                       <p className="text-sm">{error}</p>
-                     </div>
-                   </div>
-                )}
-                {result?.summary && !isLoading && !error ? (
-                  <>
-                    <div className="flex justify-between items-center text-xs text-gray-500 mb-3 pb-2 border-b">
-                       <span>Original: {result.metadata.originalWordCount} words</span>
-                       <span>Reduction: {result.metadata.percentReduced}%</span>
-                       <span>Summary: {result.metadata.summaryWordCount} words</span>
-                     </div>
-                    <div className="prose prose-sm max-w-none flex-1 overflow-y-auto"> {/* Added flex-1 overflow-y-auto */}
-                      {options.style === 'bullet-points' ? (
-                        <ul className="list-disc pl-5 space-y-1">
-                          {result.summary.split('\n- ').map((item, index) => item.trim() && <li key={index}>{item.trim()}</li>)}
-                        </ul>
-                      ) : (
-                        <p>{result.summary.split('\n').map((line, index) => <span key={index}>{line}<br/></span>)}</p>
-                      )}
-                    </div>
-                    <div className="flex justify-end gap-2 mt-4 pt-2 border-t">
-                      <button
-                        className="flex items-center gap-1 px-3 py-1.5 border border-gray-200 rounded-md text-sm hover:bg-gray-100 transition-colors"
-                        onClick={() => summarize(text, options)} // Allow regenerate
+      
+      <section className="py-12 bg-gradient-to-b from-blue-50 to-white">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">SMMRY: AI Article Summarizer</h1>
+          <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-3xl mx-auto">
+            The fastest way to summarize articles, research papers, and any lengthy text with advanced AI technology.
+          </p>
+          <div className="flex justify-center gap-4 mb-12">
+            <a href="#summarize-tool" className="btn bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md transition">
+              Summarize an Article
+            </a>
+          </div>
+        </div>
+      </section>
+      
+      <section id="summarize-tool" className="py-8">
+        <div className="container mx-auto px-4">
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden p-6">
+            <h2 className="text-2xl font-semibold mb-6 text-center sm:text-left">Summarize Any Article in Seconds</h2>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-blue-50 rounded-lg p-6">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-medium">Input Article to Summarize</h3>
+                    <div className="flex gap-1">
+                      <button 
+                        onClick={handlePaste} 
+                        className="btn btn-ghost btn-sm tooltip" 
+                        data-tip="Paste from clipboard"
                       >
-                        <RefreshCcw className="w-3.5 h-3.5" />
-                        Regenerate
+                        <Clipboard size={18} />
                       </button>
-                      <button className="flex items-center gap-1 px-3 py-1.5 border border-gray-200 rounded-md text-sm hover:bg-gray-100 transition-colors">
-                        <Save className="w-3.5 h-3.5" />
-                        Save
+                      <button 
+                        onClick={triggerFileUpload}
+                        className="btn btn-ghost btn-sm tooltip" 
+                        data-tip="Upload file"
+                      >
+                        <Upload size={18} />
+                        <input 
+                          type="file" 
+                          ref={fileInputRef} 
+                          onChange={handleFileUpload} 
+                          accept=".txt,.pdf,.doc,.docx" 
+                          className="hidden" 
+                        />
+                      </button>
+                      <button 
+                        onClick={handleClear} 
+                        className="btn btn-ghost btn-sm tooltip" 
+                        data-tip="Clear"
+                      >
+                        <Trash2 size={18} />
                       </button>
                     </div>
-                  </>
-                ) : !isLoading && !error && (
-                  <div className="text-gray-400 flex flex-col items-center justify-center flex-1 text-center"> {/* Added flex-1 text-center */}
-                    <Wand2 className="w-10 h-10 mx-auto mb-3" />
-                    <p className="text-lg font-medium mb-1">Your summary will appear here</p>
-                    <p className="text-sm max-w-xs">
-                      Enter text on the left and click 'Summarize' to generate an AI-powered summary.
-                    </p>
                   </div>
-                )}
+                  
+                  <textarea 
+                    className="w-full h-64 p-4 border rounded-lg"
+                    placeholder="Paste or type your article text here to summarize..."
+                    value={text}
+                    onChange={handleTextChange}
+                  ></textarea>
+                  
+                  <div className="flex justify-between text-sm text-gray-500">
+                    <span>{charCount} characters</span>
+                    <span className={isOverLimit ? 'text-red-500' : ''}>
+                      {wordCount} / {WORD_LIMIT} words
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <button 
+                      onClick={toggleOptions}
+                      className="btn btn-outline btn-sm flex gap-1 items-center"
+                    >
+                      <Settings size={16} />
+                      <span>Options</span>
+                    </button>
+                    <button 
+                      onClick={handleSummarize}
+                      disabled={!text.trim() || isLoading || isOverLimit}
+                      className="btn btn-primary flex-1 flex gap-1 items-center justify-center"
+                    >
+                      {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Wand2 size={18} />}
+                      <span>Summarize</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-medium">
+                    {result ? "Article Summary" : "Summary Results"}
+                  </h3>
+                  {result && (
+                    <div className="flex gap-1">
+                      <button 
+                        onClick={handleCopy} 
+                        className="btn btn-ghost btn-sm tooltip" 
+                        data-tip="Copy to clipboard"
+                      >
+                        <Copy size={18} />
+                      </button>
+                      <button 
+                        onClick={handleDownloadPDF} 
+                        className="btn btn-ghost btn-sm tooltip" 
+                        data-tip="Download as PDF"
+                      >
+                        <Download size={18} />
+                      </button>
+                      <button 
+                        onClick={handleShare} 
+                        className="btn btn-ghost btn-sm tooltip" 
+                        data-tip="Share"
+                      >
+                        <Share size={18} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="w-full flex-1 p-4 border rounded-md bg-gray-50 min-h-[300px] overflow-y-auto relative flex flex-col"> {/* Added flex-1 */}
+                  {isLoading && (
+                    <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10 rounded-md">
+                      <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                    </div>
+                  )}
+                  {error && !isLoading && (
+                    <div className="absolute inset-0 bg-red-50 flex items-center justify-center z-10 rounded-md p-4">
+                       <div className="text-center text-red-700">
+                         <AlertTriangle className="w-10 h-10 mx-auto mb-2" />
+                         <p className="font-semibold">Error Generating Summary</p>
+                         <p className="text-sm">{error}</p>
+                       </div>
+                     </div>
+                  )}
+                  {result?.summary && !isLoading && !error ? (
+                    <>
+                      <div className="flex justify-between items-center text-xs text-gray-500 mb-3 pb-2 border-b">
+                         <span>Original: {result.metadata.originalWordCount} words</span>
+                         <span>Reduction: {result.metadata.percentReduced}%</span>
+                         <span>Summary: {result.metadata.summaryWordCount} words</span>
+                       </div>
+                      <div className="prose prose-sm max-w-none flex-1 overflow-y-auto"> {/* Added flex-1 overflow-y-auto */}
+                        {options.style === 'bullet-points' ? (
+                          <ul className="list-disc pl-5 space-y-1">
+                            {result.summary.split('\n- ').map((item, index) => item.trim() && <li key={index}>{item.trim()}</li>)}
+                          </ul>
+                        ) : (
+                          <p>{result.summary.split('\n').map((line, index) => <span key={index}>{line}<br/></span>)}</p>
+                        )}
+                      </div>
+                      <div className="flex justify-end gap-2 mt-4 pt-2 border-t">
+                        <button
+                          className="flex items-center gap-1 px-3 py-1.5 border border-gray-200 rounded-md text-sm hover:bg-gray-100 transition-colors"
+                          onClick={() => summarize(text, options)} // Allow regenerate
+                        >
+                          <RefreshCcw className="w-3.5 h-3.5" />
+                          Regenerate
+                        </button>
+                        <button className="flex items-center gap-1 px-3 py-1.5 border border-gray-200 rounded-md text-sm hover:bg-gray-100 transition-colors">
+                          <Save className="w-3.5 h-3.5" />
+                          Save
+                        </button>
+                      </div>
+                    </>
+                  ) : !isLoading && !error && (
+                    <div className="text-gray-400 flex flex-col items-center justify-center flex-1 text-center"> {/* Added flex-1 text-center */}
+                      <Wand2 className="w-10 h-10 mx-auto mb-3" />
+                      <p className="text-lg font-medium mb-1">Your summary will appear here</p>
+                      <p className="text-sm max-w-xs">
+                        Enter text on the left and click 'Summarize' to generate an AI-powered summary.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
+      </section>
+      
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold mb-8 text-center">Why Use SMMRY Article Summarizer?</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h3 className="text-xl font-semibold mb-3">Save Time Reading</h3>
+              <p className="text-gray-600">
+                Get the key points from any article in seconds. SMMRY condenses lengthy content while preserving the most important information.
+              </p>
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h3 className="text-xl font-semibold mb-3">Improve Comprehension</h3>
+              <p className="text-gray-600">
+                Our AI article summarizer extracts the core concepts and key points, making complex information easier to understand.
+              </p>
+            </div>
+            
+            <div className="bg-white p-6 rounded-lg shadow-sm">
+              <h3 className="text-xl font-semibold mb-3">Research Efficiently</h3>
+              <p className="text-gray-600">
+                Summarize multiple articles quickly to determine their relevance to your research without reading entire documents.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
       {/* Share Modal */}
       {showShareModal && shareUrl && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -603,8 +597,6 @@ export default function Home() { // Changed component name to Home
           </div>
         </div>
       </section>
-
-      {/* Removed Footer component call - Already removed */}
     </main>
   );
 } 

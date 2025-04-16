@@ -49,7 +49,7 @@ export default function GuidePage() {
           </div>
           
           <div className="mt-16 text-center">
-            <Link href="/summarize" className="btn btn-primary px-8 py-3 text-lg">
+            <Link href="/" className="btn btn-primary px-8 py-3 text-lg">
               Try SummryAI Now
             </Link>
           </div>
@@ -82,7 +82,13 @@ function GuideStep({
         <h2 className="text-xl font-semibold mb-3">{title}</h2>
         <p className="text-gray-600 mb-6">{description}</p>
         <div className="rounded-lg overflow-hidden shadow-sm">
-          <Image src={imageUrl} alt={title} className="w-full h-auto" />
+          <Image 
+            src={imageUrl} 
+            alt={title} 
+            width={800} 
+            height={400} 
+            className="w-full h-auto" 
+          />
         </div>
       </div>
     </div>

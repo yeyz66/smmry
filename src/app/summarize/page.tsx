@@ -118,7 +118,7 @@ export default function SummarizePage() {
     if (!file) return;
     
     if (file.size > 5 * 1024 * 1024) { // 5MB
-      alert("文件过大，请上传小于5MB的文件");
+      alert("File too large, please upload a file smaller than 5MB");
       return;
     }
     
@@ -130,7 +130,7 @@ export default function SummarizePage() {
     ];
     
     if (!allowedTypes.includes(file.type)) {
-      alert("不支持的文件类型，请上传txt、pdf或doc/docx文件");
+      alert("Unsupported file type, please upload a TXT, PDF, or DOC/DOCX file");
       return;
     }
     
@@ -139,16 +139,16 @@ export default function SummarizePage() {
         const text = await file.text();
         setText(text);
       } else {
-        // 对于其他类型，在实际应用中应该上传到服务器进行处理
-        // 这里仅作为示例，假设提取了文本
-        alert("在真实应用中，我们会处理PDF和Word文件。当前仅支持TXT文件提取。");
+        // For other types, in a real application we would upload to server for processing
+        // This is just a demo assuming we extracted text
+        alert("In a real application, we would process PDF and Word files. Currently only TXT files are supported.");
       }
     } catch (err) {
-      console.error("文件读取错误:", err);
-      alert("文件读取失败，请重试或尝试其他文件");
+      console.error("File reading error:", err);
+      alert("Failed to read file, please try again or try another file");
     }
     
-    // 清除文件输入，便于再次选择同一文件
+    // Clear file input to allow selecting the same file again
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -158,40 +158,40 @@ export default function SummarizePage() {
     fileInputRef.current?.click();
   };
   
-  // 添加下载PDF功能
+  // Add download PDF functionality
   const handleDownloadPDF = () => {
     if (!result?.summary) return;
     
     try {
       const doc = new jsPDF();
       
-      // 添加标题
+      // Add title
       doc.setFontSize(18);
       doc.text("SummryAI - Text Summary", 20, 20);
       
-      // 添加原文和摘要信息
+      // Add original text and summary information
       doc.setFontSize(12);
       doc.text(`Original: ${result.metadata.originalWordCount} words`, 20, 30);
       doc.text(`Summary: ${result.metadata.summaryWordCount} words (${result.metadata.percentReduced}% reduction)`, 20, 37);
       
-      // 添加摘要正文
+      // Add summary content
       doc.setFontSize(14);
       doc.text("Summary:", 20, 50);
       
-      // 处理摘要文本，确保不超出页面宽度
+      // Process summary text, ensure it doesn't exceed page width
       const summaryText = result.summary;
-      const textLines = doc.splitTextToSize(summaryText, 170); // 页面宽度约为210，留出margin
+      const textLines = doc.splitTextToSize(summaryText, 170); // Page width is about 210, leaving margin
       
-      // 根据行数调整位置
+      // Adjust position based on number of lines
       doc.text(textLines, 20, 60);
       
-      // 在页面底部添加日期
+      // Add date at the bottom of the page
       const today = new Date();
       const dateStr = today.toLocaleDateString();
       doc.setFontSize(10);
       doc.text(`Generated: ${dateStr}`, 20, 280);
       
-      // 保存PDF
+      // Save PDF
       doc.save("summary.pdf");
     } catch (err) {
       console.error("Failed to generate PDF:", err);
@@ -199,42 +199,42 @@ export default function SummarizePage() {
     }
   };
   
-  // 添加分享功能
+  // Add share functionality
   const handleShare = () => {
     if (!result?.summary) return;
     
-    // 在真实应用中，你可能会将摘要保存到数据库并生成唯一ID
-    // 这里我们使用URL参数来模拟
+    // In a real application, you would likely save the summary to a database and generate a unique ID
+    // Here we're using URL parameters to simulate
     const summaryData = {
       summary: result.summary,
       metadata: result.metadata
     };
     
-    // 将摘要数据编码到URL参数中
+    // Encode summary data into URL parameters
     const encodedData = encodeURIComponent(JSON.stringify(summaryData));
-    // 生成分享URL
+    // Generate share URL
     const shareableUrl = `${window.location.origin}/shared-summary?data=${encodedData}`;
     
-    // 仅用于演示，实际上这个URL会很长，实际应用应该使用ID来引用服务器上的内容
+    // For demonstration only; in reality this URL would be too long, a real app should use an ID to reference server content
     setShareUrl(shareableUrl);
     setShowShareModal(true);
   };
 
-  // 关闭分享模态框
+  // Close share modal
   const closeShareModal = () => {
     setShowShareModal(false);
   };
 
-  // 复制分享链接
+  // Copy share link
   const copyShareLink = async () => {
     if (!shareUrl) return;
     
     try {
       await navigator.clipboard.writeText(shareUrl);
-      alert("链接已复制到剪贴板！");
+      alert("Link copied to clipboard!");
     } catch (err) {
       console.error("Failed to copy:", err);
-      alert("无法复制链接，请手动复制。");
+      alert("Unable to copy link, please copy manually.");
     }
   };
   
