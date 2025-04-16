@@ -16,7 +16,6 @@ import {
   Share,
   RefreshCcw,
   Save,
-  FileText,
   Loader2, // Added Loader2
   AlertTriangle, // Added AlertTriangle
   X // Added X for modal close
@@ -28,7 +27,7 @@ const WORD_LIMIT = parseInt(process.env.NEXT_PUBLIC_INPUT_WORD_LIMIT || '10000',
 
 export default function Home() { // Changed component name to Home
   const [text, setText] = useState("");
-  const [options, setOptions] = useState({
+  const [options] = useState({
     length: 'short' as SummaryLength,
     style: 'concise' as SummaryStyle,
     complexity: 3,
@@ -248,23 +247,6 @@ export default function Home() { // Changed component name to Home
     }
   };
 
-  // Options handlers
-  const handleLengthChange = (length: SummaryLength) => {
-    setOptions(prev => ({ ...prev, length }));
-    setShowOptions(false); // Close dropdown after selection
-  };
-
-  const handleStyleChange = (style: SummaryStyle) => {
-    setOptions(prev => ({ ...prev, style }));
-    setShowOptions(false); // Close dropdown after selection
-  };
-
-  const handleComplexityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const complexity = parseInt(e.target.value);
-    setOptions(prev => ({ ...prev, complexity }));
-    // Don't close dropdown for range slider
-  };
-
   return (
     <main className="min-h-screen">
       <Header />
@@ -441,7 +423,7 @@ export default function Home() { // Changed component name to Home
                       <Wand2 className="w-10 h-10 mx-auto mb-3" />
                       <p className="text-lg font-medium mb-1">Your summary will appear here</p>
                       <p className="text-sm max-w-xs">
-                        Enter text on the left and click 'Summarize' to generate an AI-powered summary.
+                        Enter text on the left and click &apos;Summarize&apos; to generate an AI-powered summary.
                       </p>
                     </div>
                   )}
