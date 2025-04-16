@@ -4,7 +4,6 @@ import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from "next/link";
-import Image from 'next/image'; 
 import { X } from 'lucide-react'; 
 
 // Client Component containing the form and hooks
@@ -41,13 +40,6 @@ function AuthForm() {
       
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <Image 
-            src="/logo-smmryai.png" 
-            alt="Smmry.ai Logo"
-            width={64} 
-            height={64} 
-            className="mx-auto mb-4"
-          />
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome Back</h1>
           <p className="mt-2 text-muted-foreground">Sign in to continue summarizing.</p>
         </div>
@@ -56,7 +48,7 @@ function AuthForm() {
         <button
           onClick={handleGoogleSignIn}
           disabled={isLoading}
-          className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+          className="btn btn-primary inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
         >
           {isLoading ? (
             <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -68,35 +60,6 @@ function AuthForm() {
           )}
           Sign in with Google
         </button>
-
-        {/* OR Separator */}
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        {/* Email Sign-in Placeholder */}
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Email</label>
-            <input 
-              id="email" 
-              type="email" 
-              placeholder="m@example.com" 
-              required 
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            />
-          </div>
-          <button type="submit" className="w-full rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground hover:bg-secondary/80">
-            Sign in with Email
-          </button>
-        </div>
 
         <p className="mt-4 px-8 text-center text-sm text-muted-foreground">
           By clicking continue, you agree to our{" "}
