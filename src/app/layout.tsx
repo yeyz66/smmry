@@ -12,6 +12,15 @@ export const metadata: Metadata = {
   authors: [{ name: "SMMRY Team" }],
   creator: "SMMRY",
   publisher: "SMMRY",
+  icons: {
+    icon: [
+      { url: '/favicon.svg' },
+      { url: '/favicon.ico', sizes: '32x32' }
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180' }
+    ],
+  },
   openGraph: {
     title: "SMMRY: AI Article Summarizer | Summarize Articles in Seconds",
     description: "SMMRY is a powerful AI article summarizer tool that helps you summarize any article or text quickly. Get concise summaries with our free article summarizer.",
@@ -46,7 +55,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/favicon.ico" />
+        {/* Favicon links are now handled through the metadata object above */}
       </head>
       <body className={`${inter.className} min-h-screen`}>
         <Providers>{children}</Providers>
