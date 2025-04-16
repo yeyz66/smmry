@@ -22,7 +22,7 @@ export default function Header() {
           ) : session ? (
             <>
               <span className="text-sm text-gray-600">Welcome, {session.user?.name || session.user?.email}</span>
-              <Link href="/summarize" className="btn btn-primary">Dashboard</Link>
+              {/* <Link href="/summarize" className="btn btn-primary">Dashboard</Link> */}
               <button 
                 onClick={() => signOut()} 
                 className="btn btn-outline flex items-center gap-2"
