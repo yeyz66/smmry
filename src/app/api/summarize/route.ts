@@ -20,7 +20,7 @@ const summarizeRequestSchema = z.object({
 
 // Configure DeepSeek API client
 const openai = new OpenAI({
-  baseURL: 'https://api.deepseek.com',
+  baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com', // Use env variable with fallback
   apiKey: process.env.DEEPSEEK_API_KEY || '' // Add this to your .env.local file
 });
 
@@ -167,6 +167,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Return the summary
+    console.log("Summary:", summary);
     const summaryWordCount = summary.split(/\s+/).filter(Boolean).length;
     return NextResponse.json({
       summary,
@@ -248,10 +249,10 @@ async function summarizeWithDeepSeek(
         },
         { 
           role: "user", 
-          content: `${prompt}\n\nHere's the text to summarize:\n\n${text}` 
+          content: `${prompt} Do not include the word count in parentheses at the end of the summary.\n\nHere's the text to summarize:\n\n${text}` 
         }
       ],
-      model: "deepseek-chat",
+      model: process.env.DEEPSEEK_MODEL_NAME || "deepseek-chat", // Use env variable with fallback
     });
     
     let summaryContent = completion.choices[0].message.content || "Error: No summary was generated.";

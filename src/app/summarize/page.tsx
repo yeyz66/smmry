@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRef } from "react";
 import { jsPDF } from "jspdf";
 // import { useSearchParams } from 'next/navigation'; // Removed unused import
@@ -20,6 +20,9 @@ import {
 } from "lucide-react";
 import useSummarize, { SummaryLength, SummaryStyle } from "@/hooks/useSummarize";
 
+// Read word limit from environment variable, default to 10000
+const WORD_LIMIT = parseInt(process.env.NEXT_PUBLIC_INPUT_WORD_LIMIT || '10000', 10);
+
 export default function SummarizePage() {
   const [text, setText] = useState("");
   const [options, setOptions] = useState({
@@ -33,12 +36,31 @@ export default function SummarizePage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
   
-  // Count characters
+  // Count characters and words
   const charCount = text.length;
+  const wordCount = useMemo(() => {
+    // Simple word count: split by whitespace, filter empty strings
+    return text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+  }, [text]);
+  const isOverLimit = wordCount > WORD_LIMIT;
   
   // Handle user actions
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
+    const newText = e.target.value;
+    const newWordCount = newText.trim() === '' ? 0 : newText.trim().split(/\s+/).length;
+
+    // Only update state if within the word limit
+    if (newWordCount <= WORD_LIMIT) {
+      setText(newText);
+    } else {
+      // Optional: Provide feedback that the limit is reached
+      // For example, you could set an error state or simply not update
+      // To truncate:
+      // const words = newText.trim().split(/\s+/);
+      // setText(words.slice(0, WORD_LIMIT).join(' '));
+      // But preventing further input is often clearer
+      console.warn(`Word limit (${WORD_LIMIT}) reached.`);
+    }
   };
   
   const handleClear = () => {
@@ -49,7 +71,16 @@ export default function SummarizePage() {
   const handlePaste = async () => {
     try {
       const clipboardText = await navigator.clipboard.readText();
-      setText(clipboardText);
+      const pastedWordCount = clipboardText.trim() === '' ? 0 : clipboardText.trim().split(/\s+/).length;
+      
+      if (pastedWordCount <= WORD_LIMIT) {
+        setText(clipboardText);
+      } else {
+        // Truncate pasted text if it exceeds the limit
+        const words = clipboardText.trim().split(/\s+/);
+        setText(words.slice(0, WORD_LIMIT).join(' '));
+        alert(`Pasted text exceeds the ${WORD_LIMIT}-word limit and has been truncated.`);
+      }
     } catch (err) {
       console.error("Failed to read clipboard:", err);
       // User may have denied clipboard permission
@@ -58,6 +89,11 @@ export default function SummarizePage() {
   };
   
   const handleSummarize = () => {
+    // Also check word count limit here, although button should be disabled
+    if (isOverLimit) {
+      alert(`Input text exceeds the ${WORD_LIMIT}-word limit.`);
+      return;
+    }
     summarize(text, options);
   };
   
@@ -269,7 +305,11 @@ export default function SummarizePage() {
               ></textarea>
               
               <div className="flex justify-between items-center mt-4">
-                <div className="text-sm text-gray-500">{charCount} characters</div>
+                {/* Display word count and limit */}
+                <div className={`text-sm ${isOverLimit ? 'text-red-600 font-semibold' : 'text-gray-500'}`}>
+                  {wordCount} / {WORD_LIMIT} words 
+                  <span className="ml-4 text-gray-500">({charCount} characters)</span>
+                </div>
                 
                 <div className="flex items-center gap-3">
                   <div className="relative">
@@ -331,9 +371,9 @@ export default function SummarizePage() {
                   </div>
                   
                   <button 
-                    className={`btn btn-primary flex items-center gap-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    className={`btn btn-primary flex items-center gap-2 ${isLoading || isOverLimit ? 'opacity-70 cursor-not-allowed' : ''}`}
                     onClick={handleSummarize}
-                    disabled={isLoading || text.trim().length < 10}
+                    disabled={isLoading || text.trim().length < 10 || isOverLimit}
                   >
                     <span>{isLoading ? 'Summarizing...' : 'Summarize'}</span>
                     <Wand2 className="w-4 h-4" />
