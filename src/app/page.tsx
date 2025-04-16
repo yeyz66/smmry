@@ -27,7 +27,7 @@ const WORD_LIMIT = parseInt(process.env.NEXT_PUBLIC_INPUT_WORD_LIMIT || '10000',
 
 export default function Home() { // Changed component name to Home
   const [text, setText] = useState("");
-  const [options] = useState({
+  const [options, setOptions] = useState({
     length: 'short' as SummaryLength,
     style: 'concise' as SummaryStyle,
     complexity: 3,
@@ -338,6 +338,63 @@ export default function Home() { // Changed component name to Home
                       <span>Summarize</span>
                     </button>
                   </div>
+                  
+                  {showOptions && (
+                    <div className="absolute mt-2 w-72 bg-white rounded-lg shadow-lg p-4 border border-gray-200 z-10">
+                      <div className="mb-3">
+                        <label className="block text-sm font-medium mb-1">Summary Length</label>
+                        <select 
+                          className="w-full p-2 border border-gray-200 rounded-md text-sm"
+                          value={options.length}
+                          onChange={(e) => setOptions({...options, length: e.target.value as SummaryLength})}
+                        >
+                          <option value="very-short">Very Short (10%)</option>
+                          <option value="short">Short (25%)</option>
+                          <option value="medium">Medium (50%)</option>
+                          <option value="long">Long (75%)</option>
+                        </select>
+                      </div>
+                      
+                      <div className="mb-3">
+                        <label className="block text-sm font-medium mb-1">Summary Style</label>
+                        <select 
+                          className="w-full p-2 border border-gray-200 rounded-md text-sm"
+                          value={options.style}
+                          onChange={(e) => setOptions({...options, style: e.target.value as SummaryStyle})}
+                        >
+                          <option value="concise">Concise</option>
+                          <option value="detailed">Detailed</option>
+                          <option value="bullet-points">Bullet Points</option>
+                          <option value="academic">Academic</option>
+                          <option value="simplified">Simplified</option>
+                        </select>
+                      </div>
+                      
+                      <div className="mb-3">
+                        <label className="block text-sm font-medium mb-1">Complexity (1-5)</label>
+                        <div className="flex items-center">
+                          <input 
+                            type="range" 
+                            min="1" 
+                            max="5" 
+                            value={options.complexity}
+                            onChange={(e) => setOptions({...options, complexity: parseInt(e.target.value)})}
+                            className="w-full"
+                          />
+                          <span className="ml-2 text-sm font-medium">{options.complexity}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end">
+                        <button 
+                          onClick={toggleOptions}
+                          className="px-3 py-1 bg-gray-100 hover:bg-gray-200 text-sm rounded"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               
