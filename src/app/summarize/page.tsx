@@ -19,6 +19,7 @@ import {
   FileText
 } from "lucide-react";
 import useSummarize, { SummaryLength, SummaryStyle } from "@/hooks/useSummarize";
+import { QueueStatus } from "@/components/QueueStatus";
 
 // Read word limit from environment variable, default to 10000
 const WORD_LIMIT = parseInt(process.env.NEXT_PUBLIC_INPUT_WORD_LIMIT || '10000', 10);
@@ -31,7 +32,7 @@ export default function SummarizePage() {
     complexity: 3,
   });
   const [showOptions, setShowOptions] = useState(false);
-  const { summarize, reset, isLoading, error, result } = useSummarize();
+  const { summarize, isLoading, error, result, isInQueue, queuePosition } = useSummarize();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -65,7 +66,6 @@ export default function SummarizePage() {
   
   const handleClear = () => {
     setText("");
-    reset();
   };
   
   const handlePaste = async () => {
@@ -371,12 +371,11 @@ export default function SummarizePage() {
                   </div>
                   
                   <button 
-                    className={`btn btn-primary flex items-center gap-2 ${isLoading || isOverLimit ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    className={`mt-4 w-full flex items-center justify-center gap-2 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     onClick={handleSummarize}
-                    disabled={isLoading || text.trim().length < 10 || isOverLimit}
+                    disabled={isLoading || isOverLimit || text.trim().length < 10}
                   >
-                    <span>{isLoading ? 'Summarizing...' : 'Summarize'}</span>
-                    <Wand2 className="w-4 h-4" />
+                    {isLoading ? 'Summarizing...' : 'Summarize'}
                   </button>
                 </div>
               </div>
@@ -384,6 +383,9 @@ export default function SummarizePage() {
             
             {/* Output Panel */}
             <div className="p-5">
+              {/* Add Queue Status Component */}
+              <QueueStatus isInQueue={isInQueue} queuePosition={queuePosition} />
+              
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">Summary Result</h2>
                 <div className="flex gap-2">
@@ -448,7 +450,7 @@ export default function SummarizePage() {
                     <div className="flex justify-end gap-2 mt-6">
                       <button 
                         className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-md bg-white hover:bg-gray-50 transition-colors"
-                        onClick={() => summarize(text, options)}
+                        onClick={handleSummarize}
                       >
                         <RefreshCcw className="w-4 h-4" />
                         <span className="text-sm">Regenerate</span>

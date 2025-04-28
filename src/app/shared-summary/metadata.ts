@@ -1,15 +1,15 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Shared Summary | SMMRY Article Summarizer",
-  description: "View a shared article summary created with SMMRY's AI-powered article summarizer tool.",
-  keywords: "shared summary, article summary, smmry share, article summarizer results",
+  title: "Shared Article Summary | SMMRY Article Summarizer Results",
+  description: "View a shared article summary created with SMMRY's AI-powered article summarizer. See how our tool can summarize articles, websites and text effectively.",
+  keywords: "shared summary, article summary, smmry share, article summarizer results, summarize article example, website summarizer example, summarise articles",
   alternates: {
     canonical: "https://aismmry.com/shared-summary",
   },
   openGraph: {
-    title: "Shared Summary | SMMRY Article Summarizer",
-    description: "View a shared article summary created with SMMRY's AI-powered article summarizer tool.",
+    title: "Shared Article Summary | SMMRY Article Summarizer Results",
+    description: "View a shared article summary created with SMMRY's AI-powered article summarizer. See how our tool can summarize articles, websites and text effectively.",
     url: "https://aismmry.com/shared-summary",
     siteName: "SMMRY",
     images: [

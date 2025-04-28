@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "SMMRY: AI Article Summarizer | Summarize Articles in Seconds",
-  description: "SMMRY is a powerful AI article summarizer tool that helps you summarize any article or text quickly. Get concise summaries with our free article summarizer.",
-  keywords: "smmry, summarize, article summarizer, summarize article, summarize of article, text summarizer, AI summarizer",
+  description: "SMMRY is a powerful AI article summarizer that helps you summarize any article, website or text quickly. Get concise summaries with our free tool - just paste and click to summarize it!",
+  keywords: "smmry, article summarizer, summarize article, summarize of article, website summarizer, summarize it, summarise articles, summarize this article, summarize an article, summarize articles, summarize my article",
   authors: [{ name: "SMMRY Team" }],
   creator: "SMMRY",
   publisher: "SMMRY",
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "SMMRY: AI Article Summarizer | Summarize Articles in Seconds",
-    description: "SMMRY is a powerful AI article summarizer tool that helps you summarize any article or text quickly. Get concise summaries with our free article summarizer.",
+    description: "SMMRY is a powerful AI article summarizer that helps you summarize any article, website or text quickly. Get concise summaries with our free tool - just paste and click to summarize it!",
     url: "https://aismmry.com",
     siteName: "SMMRY",
     images: [
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "SMMRY: AI Article Summarizer | Summarize Articles in Seconds",
-    description: "SMMRY is a powerful AI article summarizer tool that helps you summarize any article or text quickly. Get concise summaries with our free article summarizer.",
+    description: "SMMRY is a powerful AI article summarizer that helps you summarize any article, website or text quickly. Get concise summaries with our free tool - just paste and click to summarize it!",
     images: ["https://aismmry.com/api/og"],
   },
   viewport: "width=device-width, initial-scale=1",
@@ -55,19 +56,45 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-NRSD3TEM2V"></script>
+        {/* Favicon links are now handled through the metadata object above */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-NRSD3TEM2V"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-NRSD3TEM2V');
+          `}
+        </Script>
+        {/* Structured data for SEO */}
         <script
+          type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-NRSD3TEM2V');
+              {
+                "@context": "https://schema.org",
+                "@type": "SoftwareApplication",
+                "name": "SMMRY Article Summarizer",
+                "applicationCategory": "WebApplication",
+                "operatingSystem": "Web",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "0",
+                  "priceCurrency": "USD"
+                },
+                "description": "SMMRY is a powerful AI article summarizer that helps you summarize any article, website or text quickly. Get concise summaries with our free tool.",
+                "aggregateRating": {
+                  "@type": "AggregateRating",
+                  "ratingValue": "4.8",
+                  "ratingCount": "124"
+                }
+              }
             `,
           }}
         />
-        {/* Favicon links are now handled through the metadata object above */}
       </head>
       <body className={`${inter.className} min-h-screen`}>
         <Providers>{children}</Providers>

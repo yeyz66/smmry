@@ -8,6 +8,9 @@ import { authOptions } from '@/lib/authOptions'; // New path
 import { createClient } from '@supabase/supabase-js';
 // Correct path relative to @/ alias (smmry-app/src/)
 import { summarizationLimits } from '@/../config/limits'; 
+import { RateLimitService } from '@/lib/rateLimitService';
+import { getUserType } from '@/lib/userUtils';
+import { UserType } from '@/types/queue';
 // import { User as NextAuthUser } from 'next-auth'; // Removed unused import
 
 // Validation schema for the request body
@@ -47,9 +50,14 @@ const supabase = supabaseUrl && supabaseServiceRoleKey
     })
   : null;
 
+// Initialize rate limit service
+const rateLimitService = supabaseUrl && supabaseServiceRoleKey
+  ? new RateLimitService(supabaseUrl, supabaseServiceRoleKey)
+  : null;
+
 export async function POST(request: NextRequest) {
   // Check for Supabase client initialization
-  if (!supabase) {
+  if (!supabase || !rateLimitService) {
       console.error("Supabase client not initialized. Check environment variables.");
       return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
   }
@@ -76,6 +84,32 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    // Get user type (free or premium)
+    const userType = await getUserType(supabase, userId);
+    
+    // Check per-minute rate limit for free users
+    if (userType === UserType.FREE) {
+      const rateLimitInfo = await rateLimitService.checkRateLimit(userId, userType);
+      
+      // If user has exceeded rate limit and is in queue
+      if (rateLimitInfo.queuePosition > 0) {
+        // Check if user is next in queue and can proceed
+        const canProceed = await rateLimitService.canProceedFromQueue(userId);
+        
+        if (!canProceed) {
+          // Return queue position to client
+          return NextResponse.json(
+            { 
+              error: "Rate limit exceeded. You're in queue.",
+              queuePosition: rateLimitInfo.queuePosition
+            },
+            { status: 429 } // Too Many Requests
+          );
+        }
+        // If we get here, user can proceed (they're next in queue)
+      }
+    }
+    
     // 3. Fetch Current Count & Modify Time, Check Limit based on Date
     let currentCount = 0;
     let isNewDay = true; // Assume new day or new user initially
@@ -164,6 +198,11 @@ export async function POST(request: NextRequest) {
         // Decide if you should still return the summary or an error
         // Returning 500 as the state might be inconsistent
         return NextResponse.json({ error: "Failed to update usage count" }, { status: 500 });
+    }
+    
+    // Increment per-minute rate limit count for free users
+    if (userType === UserType.FREE) {
+      await rateLimitService.incrementRequestCount(userId);
     }
 
     // Return the summary

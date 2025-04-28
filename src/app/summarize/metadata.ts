@@ -1,15 +1,15 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Summarize Articles with SMMRY | Free Article Summarizer Tool",
-  description: "Summarize any article or text with SMMRY's AI-powered article summarizer. Our free tool creates concise, accurate summaries of articles in seconds.",
-  keywords: "summarize article, article summarizer, summarize, smmry, summarize of article, summarize text, AI article summary",
+  title: "Summarize Articles, Websites & Text | Free SMMRY Article Summarizer",
+  description: "Summarize any article, website or text with SMMRY's AI-powered summarizer. Paste your content and click to summarize it - get concise, accurate summaries in seconds.",
+  keywords: "summarize article, article summarizer, summarize, smmry, summarize of article, summarize it, summarise articles, summarize this article, summarize an article, website summarizer, summarize my article",
   alternates: {
     canonical: "https://aismmry.com/summarize",
   },
   openGraph: {
-    title: "Summarize Articles with SMMRY | Free Article Summarizer Tool",
-    description: "Summarize any article or text with SMMRY's AI-powered article summarizer. Our free tool creates concise, accurate summaries of articles in seconds.",
+    title: "Summarize Articles, Websites & Text | Free SMMRY Article Summarizer",
+    description: "Summarize any article, website or text with SMMRY's AI-powered summarizer. Paste your content and click to summarize it - get concise, accurate summaries in seconds.",
     url: "https://aismmry.com/summarize",
     siteName: "SMMRY",
     images: [
